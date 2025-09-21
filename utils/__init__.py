@@ -1,0 +1,1 @@
+# Utilities package for AWS Infographic Generator

@@ -1,0 +1,177 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'CloudWatch Alarms for AWS Infographic Generator'
+
+Parameters:
+  Environment:
+    Type: String
+    Default: dev
+    Description: Environment name
+  
+  ProjectName:
+    Type: String
+    Default: aws-infographic-generator
+    Description: Project name
+  
+  NotificationEmail:
+    Type: String
+    Description: Email address for alarm notifications
+    Default: admin@example.com
+
+Resources:
+  # SNS Topic for alarm notifications
+  AlarmNotificationTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: !Sub "${ProjectName}-alarms-${Environment}"
+      DisplayName: !Sub "${ProjectName} Alarms (${Environment})"
+
+  # SNS Subscription for email notifications
+  AlarmNotificationSubscription:
+    Type: AWS::SNS::Subscription
+    Properties:
+      Protocol: email
+      TopicArn: !Ref AlarmNotificationTopic
+      Endpoint: !Ref NotificationEmail
+
+  # Lambda Function Error Rate Alarm
+  LambdaErrorRateAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub "${ProjectName}-lambda-error-rate-${Environment}"
+      AlarmDescription: "High error rate in Lambda function"
+      MetricName: Errors
+      Namespace: AWS/Lambda
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 2
+      Threshold: 5
+      ComparisonOperator: GreaterThanThreshold
+      Dimensions:
+        - Name: FunctionName
+          Value: !Sub "${ProjectName}-generator-${Environment}"
+      AlarmActions:
+        - !Ref AlarmNotificationTopic
+      TreatMissingData: notBreaching
+
+  # Lambda Function Duration Alarm
+  LambdaDurationAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub "${ProjectName}-lambda-duration-${Environment}"
+      AlarmDescription: "Lambda function taking too long to execute"
+      MetricName: Duration
+      Namespace: AWS/Lambda
+      Statistic: Average
+      Period: 300
+      EvaluationPeriods: 2
+      Threshold: 600000  # 10 minutes in milliseconds
+      ComparisonOperator: GreaterThanThreshold
+      Dimensions:
+        - Name: FunctionName
+          Value: !Sub "${ProjectName}-generator-${Environment}"
+      AlarmActions:
+        - !Ref AlarmNotificationTopic
+      TreatMissingData: notBreaching
+
+  # Lambda Function Throttle Alarm
+  LambdaThrottleAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub "${ProjectName}-lambda-throttles-${Environment}"
+      AlarmDescription: "Lambda function being throttled"
+      MetricName: Throttles
+      Namespace: AWS/Lambda
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      Dimensions:
+        - Name: FunctionName
+          Value: !Sub "${ProjectName}-generator-${Environment}"
+      AlarmActions:
+        - !Ref AlarmNotificationTopic
+      TreatMissingData: notBreaching
+
+  # Custom Metric: High Generation Error Rate
+  GenerationErrorRateAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub "${ProjectName}-generation-error-rate-${Environment}"
+      AlarmDescription: "High rate of infographic generation errors"
+      MetricName: GenerationErrors
+      Namespace: InfographicGenerator
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 2
+      Threshold: 10
+      ComparisonOperator: GreaterThanThreshold
+      AlarmActions:
+        - !Ref AlarmNotificationTopic
+      TreatMissingData: notBreaching
+
+  # Custom Metric: Critical Errors
+  CriticalErrorAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub "${ProjectName}-critical-errors-${Environment}"
+      AlarmDescription: "Critical errors in infographic generation system"
+      MetricName: CriticalErrors
+      Namespace: InfographicGenerator
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      AlarmActions:
+        - !Ref AlarmNotificationTopic
+      TreatMissingData: notBreaching
+
+  # S3 Bucket Size Alarm (for cost monitoring)
+  S3BucketSizeAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub "${ProjectName}-s3-bucket-size-${Environment}"
+      AlarmDescription: "S3 bucket size growing too large"
+      MetricName: BucketSizeBytes
+      Namespace: AWS/S3
+      Statistic: Average
+      Period: 86400  # Daily
+      EvaluationPeriods: 1
+      Threshold: 10737418240  # 10 GB in bytes
+      ComparisonOperator: GreaterThanThreshold
+      Dimensions:
+        - Name: BucketName
+          Value: !Sub "aws-infographic-generator-assets-${Environment}"
+        - Name: StorageType
+          Value: StandardStorage
+      AlarmActions:
+        - !Ref AlarmNotificationTopic
+      TreatMissingData: notBreaching
+
+  # Composite Alarm for System Health
+  SystemHealthAlarm:
+    Type: AWS::CloudWatch::CompositeAlarm
+    Properties:
+      AlarmName: !Sub "${ProjectName}-system-health-${Environment}"
+      AlarmDescription: "Overall system health check"
+      AlarmRule: !Sub |
+        ALARM(${LambdaErrorRateAlarm}) OR 
+        ALARM(${CriticalErrorAlarm}) OR 
+        ALARM(${LambdaThrottleAlarm})
+      ActionsEnabled: true
+      AlarmActions:
+        - !Ref AlarmNotificationTopic
+
+Outputs:
+  AlarmTopicArn:
+    Description: ARN of the SNS topic for alarm notifications
+    Value: !Ref AlarmNotificationTopic
+    Export:
+      Name: !Sub "${AWS::StackName}-AlarmTopic"
+  
+  SystemHealthAlarmName:
+    Description: Name of the composite system health alarm
+    Value: !Ref SystemHealthAlarm
+    Export:
+      Name: !Sub "${AWS::StackName}-SystemHealthAlarm"

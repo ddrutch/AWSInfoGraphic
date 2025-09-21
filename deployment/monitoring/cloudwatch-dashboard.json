@@ -1,0 +1,120 @@
+{
+    "widgets": [
+        {
+            "type": "metric",
+            "x": 0,
+            "y": 0,
+            "width": 12,
+            "height": 6,
+            "properties": {
+                "metrics": [
+                    [ "InfographicGenerator", "SuccessfulGenerations", { "stat": "Sum" } ],
+                    [ ".", "GenerationErrors", { "stat": "Sum" } ],
+                    [ ".", "CriticalErrors", { "stat": "Sum" } ]
+                ],
+                "view": "timeSeries",
+                "stacked": false,
+                "region": "us-east-1",
+                "title": "Infographic Generation Metrics",
+                "period": 300,
+                "yAxis": {
+                    "left": {
+                        "min": 0
+                    }
+                }
+            }
+        },
+        {
+            "type": "metric",
+            "x": 12,
+            "y": 0,
+            "width": 12,
+            "height": 6,
+            "properties": {
+                "metrics": [
+                    [ "AWS/Lambda", "Duration", "FunctionName", "aws-infographic-generator-generator-dev", { "stat": "Average" } ],
+                    [ ".", "Invocations", ".", ".", { "stat": "Sum" } ],
+                    [ ".", "Errors", ".", ".", { "stat": "Sum" } ],
+                    [ ".", "Throttles", ".", ".", { "stat": "Sum" } ]
+                ],
+                "view": "timeSeries",
+                "stacked": false,
+                "region": "us-east-1",
+                "title": "Lambda Function Metrics",
+                "period": 300
+            }
+        },
+        {
+            "type": "metric",
+            "x": 0,
+            "y": 6,
+            "width": 8,
+            "height": 6,
+            "properties": {
+                "metrics": [
+                    [ "InfographicGenerator", "SuccessfulGenerations", "Platform", "whatsapp", { "stat": "Sum" } ],
+                    [ "...", "twitter", { "stat": "Sum" } ],
+                    [ "...", "discord", { "stat": "Sum" } ],
+                    [ "...", "general", { "stat": "Sum" } ]
+                ],
+                "view": "timeSeries",
+                "stacked": false,
+                "region": "us-east-1",
+                "title": "Generations by Platform",
+                "period": 300
+            }
+        },
+        {
+            "type": "metric",
+            "x": 8,
+            "y": 6,
+            "width": 8,
+            "height": 6,
+            "properties": {
+                "metrics": [
+                    [ "AWS/S3", "BucketSizeBytes", "BucketName", "aws-infographic-generator-assets-dev", "StorageType", "StandardStorage", { "stat": "Average" } ],
+                    [ ".", "NumberOfObjects", ".", ".", ".", "AllStorageTypes", { "stat": "Average" } ]
+                ],
+                "view": "timeSeries",
+                "stacked": false,
+                "region": "us-east-1",
+                "title": "S3 Storage Metrics",
+                "period": 86400
+            }
+        },
+        {
+            "type": "metric",
+            "x": 16,
+            "y": 6,
+            "width": 8,
+            "height": 6,
+            "properties": {
+                "metrics": [
+                    [ "InfographicGenerator", "GenerationErrors", "ErrorType", "ContentAnalysisError", { "stat": "Sum" } ],
+                    [ "...", "ImageGenerationError", { "stat": "Sum" } ],
+                    [ "...", "LayoutError", { "stat": "Sum" } ],
+                    [ "...", "S3Error", { "stat": "Sum" } ],
+                    [ "...", "BedrockError", { "stat": "Sum" } ]
+                ],
+                "view": "timeSeries",
+                "stacked": false,
+                "region": "us-east-1",
+                "title": "Errors by Type",
+                "period": 300
+            }
+        },
+        {
+            "type": "log",
+            "x": 0,
+            "y": 12,
+            "width": 24,
+            "height": 6,
+            "properties": {
+                "query": "SOURCE '/aws/infographic-generator/dev'\n| fields @timestamp, @message\n| filter @message like /ERROR/\n| sort @timestamp desc\n| limit 100",
+                "region": "us-east-1",
+                "title": "Recent Error Logs",
+                "view": "table"
+            }
+        }
+    ]
+}

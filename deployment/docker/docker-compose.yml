@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  infographic-generator:
+    build:
+      context: ../../
+      dockerfile: deployment/docker/Dockerfile
+    container_name: aws-infographic-generator
+    environment:
+      - AWS_REGION=${AWS_REGION:-us-east-1}
+      - S3_BUCKET=${S3_BUCKET:-aws-infographic-generator-assets}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - ENVIRONMENT=${ENVIRONMENT:-development}
+    env_file:
+      - ../../.env
+    volumes:
+      - ../../images:/app/images
+      - logs:/app/logs
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+    networks:
+      - infographic-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Optional: LocalStack for local AWS services testing
+  localstack:
+    image: localstack/localstack:latest
+    container_name: localstack-infographic
+    environment:
+      - SERVICES=s3,lambda,logs,iam
+      - DEBUG=1
+      - DATA_DIR=/tmp/localstack/data
+      - LAMBDA_EXECUTOR=docker
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    ports:
+      - "4566:4566"
+      - "4571:4571"
+    volumes:
+      - "/tmp/localstack:/tmp/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    networks:
+      - infographic-network
+    profiles:
+      - local-testing
+
+volumes:
+  logs:
+    driver: local
+
+networks:
+  infographic-network:
+    driver: bridge
