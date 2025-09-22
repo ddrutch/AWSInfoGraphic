@@ -56,7 +56,7 @@ graph TB
     style Bedrock1 fill:#fff3e0
     style Bedrock2 fill:#fff3e0
     style NovaCanvas fill:#fff3e0
-    S3Cache fill:#e8f5e8
+    style S3Cache fill:#e8f5e8
     style S3Output fill:#e8f5e8
 ```
 
