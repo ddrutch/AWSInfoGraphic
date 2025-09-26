@@ -30,6 +30,11 @@ MAX_RETRIES = int(os.getenv("MAX_RETRIES", "3"))
 RETRY_DELAY = float(os.getenv("RETRY_DELAY", "1.0"))
 REQUEST_TIMEOUT = int(os.getenv("REQUEST_TIMEOUT", "30"))
 
+# Demo mode: when set to a truthy value (1/true), skip Bedrock calls and use
+# local deterministic fallbacks. Useful for demo recordings and hackathon
+# judges who won't have access to Bedrock credentials.
+DEMO_MODE = os.getenv("DEMO_MODE", os.getenv("AWSINFOGRAPHIC_DEMO_MODE", "0")).lower() in ("1", "true", "yes")
+
 # Image Generation Settings
 DEFAULT_IMAGE_FORMAT = os.getenv("DEFAULT_IMAGE_FORMAT", "PNG")
 DEFAULT_IMAGE_QUALITY = int(os.getenv("DEFAULT_IMAGE_QUALITY", "95"))

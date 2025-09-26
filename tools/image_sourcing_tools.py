@@ -1,10 +1,60 @@
+"""Minimal image sourcing tools used by ImageSourcer agent.
+
+This provides a placeholder implementation that can be used in demo mode
+or when Nova Canvas access is not available. Implements an async API and
+returns objects compatible with the ImageAsset dataclass described in docs.
+"""
+
+import asyncio
+import logging
+from typing import Dict, Any, List, Tuple, Optional
+
+try:
+    from strands import tool
+except Exception:
+    def tool(fn=None, **kwargs):
+        if fn is None:
+            def _wrap(f):
+                return f
+            return _wrap
+        return fn
+
+logger = logging.getLogger(__name__)
+
+
+@tool
+async def create_placeholder_image(dimensions: Tuple[int, int], text: str = "Image") -> Dict[str, Any]:
+    """Create a placeholder image asset (no real image generation).
+
+    Returns a dict with the minimal fields used by downstream agents.
+    """
+    width, height = dimensions
+    # Simulate async work
+    await asyncio.sleep(0.01)
+    return {
+        "url": None,
+        "local_path": None,
+        "description": text,
+        "dimensions": (width, height),
+        "asset_type": "placeholder",
+        "file_size": 0,
+        "format": "PNG",
+        "metadata": {},
+        "generation_prompt": None,
+        "cache_key": None
+    }
+
+
+@tool
+async def source_images(topic: str, count: int = 3, style: str = "professional") -> List[Dict[str, Any]]:
+    """Return a list of placeholder image assets for the given topic."""
+    tasks = [create_placeholder_image((1024, 1024), f"{topic} - {i+1}") for i in range(count)]
+    return await asyncio.gather(*tasks)
 """Image sourcing tools for the ImageSourcer agent."""
 
 import logging
 from datetime import datetime
 from typing import Dict, List, Any, Optional
-
-from strands import tool
 
 logger = logging.getLogger(__name__)
 

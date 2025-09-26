@@ -8,8 +8,56 @@ following AWS Strands SDK patterns for multi-agent orchestration.
 import logging
 from typing import Any, Dict, Optional
 
-from strands import Agent
-from strands.models import BedrockModel
+try:
+    from strands import Agent
+    from strands.models import BedrockModel
+except Exception:
+    # Provide lightweight shims so the ContentAnalyzer can be exercised
+    # locally without the Strands SDK or Bedrock access. The shimbed
+    # Agent simply calls the content analysis tools directly.
+    Agent = None
+    class BedrockModel:  # simple placeholder
+        def __init__(self, model_id=None):
+            self.model_id = model_id
+
+
+    class AgentShim:
+        def __init__(self, name: str, system_prompt: str = None, model: Any = None, tools: Optional[list] = None):
+            self.name = name
+            self.system_prompt = system_prompt
+            self.model = model
+            # tools is a list of callables; we keep reference for completeness
+            self.tools = tools or []
+
+        async def invoke_async(self, prompt: str):
+            # Minimal prompt parsing: extract the content block from the prompt
+            import re
+            from tools.content_analysis_tools import (
+                analyze_content_structure,
+                extract_key_messages,
+                categorize_content_type,
+            )
+
+            m = re.search(r"Content:\s*(.*?)\n\nPlease", prompt, re.S)
+            content = m.group(1).strip() if m else prompt
+
+            # Use the existing tools (they have local fallbacks) to produce
+            # a structured response resembling what the full agent would return.
+            structure = await analyze_content_structure(content)
+            key_points = await extract_key_messages(content, max_points=5)
+            ctype = await categorize_content_type(content)
+
+            return {
+                "structure": structure,
+                "key_points": key_points,
+                "content_type": ctype,
+                "recommendations": [
+                    "Use clear headings",
+                    "Highlight top 3 key points with icons",
+                ],
+            }
+
+    Agent = AgentShim
 
 from tools.content_analysis_tools import get_content_analysis_tools
 from utils.constants import BEDROCK_MODEL_ID, BEDROCK_REGION

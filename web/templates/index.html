@@ -1,0 +1,1023 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>InfoGraphic AI — Transform Text into Stunning Visuals Instantly</title>
+    <meta name="description" content="Turn any text into professional infographics in seconds. AI-powered content analysis, image generation, and layout design. Perfect for presentations, social media, and marketing.">
+    <!-- Inline SVG favicon -->
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%236366F1' d='M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z'/%3E%3C/svg%3E">
+    <style>
+      :root {
+        --primary: #6366f1;
+        --primary-dark: #4f46e5;
+        --secondary: #06b6d4;
+        --accent: #f59e0b;
+        --success: #10b981;
+        --warning: #f97316;
+        --error: #ef4444;
+        --gray-50: #f9fafb;
+        --gray-100: #f3f4f6;
+        --gray-200: #e5e7eb;
+        --gray-300: #d1d5db;
+        --gray-400: #9ca3af;
+        --gray-500: #6b7280;
+        --gray-600: #4b5563;
+        --gray-700: #374151;
+        --gray-800: #1f2937;
+        --gray-900: #111827;
+        --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --gradient-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        --gradient-accent: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+        --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+        --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        --border-radius: 8px;
+        --border-radius-lg: 12px;
+        --border-radius-xl: 16px;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        line-height: 1.6;
+        color: var(--gray-800);
+        background: var(--gradient-primary);
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+
+      /* Animations */
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes pulse {
+        0%, 100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.05);
+        }
+      }
+
+      @keyframes float {
+        0%, 100% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-10px);
+        }
+      }
+
+      @keyframes glow {
+        0%, 100% {
+          box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+        }
+        50% {
+          box-shadow: 0 0 30px rgba(99, 102, 241, 0.6);
+        }
+      }
+
+      .animate-fade-in-up {
+        animation: fadeInUp 0.6s ease-out;
+      }
+
+      .animate-pulse {
+        animation: pulse 2s infinite;
+      }
+
+      .animate-float {
+        animation: float 3s ease-in-out infinite;
+      }
+
+      .animate-glow {
+        animation: glow 2s ease-in-out infinite;
+      }
+
+      /* Layout */
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+
+      /* Hero Section */
+      .hero {
+        text-align: center;
+        padding: 80px 0 60px;
+        color: white;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
+        animation: float 20s ease-in-out infinite;
+      }
+
+      .hero-content {
+        position: relative;
+        z-index: 2;
+      }
+
+      .hero-badge {
+        display: inline-block;
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: white;
+        padding: 8px 16px;
+        border-radius: 50px;
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 24px;
+        animation: fadeInUp 0.6s ease-out;
+      }
+
+      .hero h1 {
+        font-size: clamp(2.5rem, 5vw, 4rem);
+        font-weight: 800;
+        margin-bottom: 16px;
+        background: linear-gradient(135deg, #ffffff 0%, #e0e7ff 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: fadeInUp 0.6s ease-out 0.2s both;
+      }
+
+      .hero-subtitle {
+        font-size: clamp(1.1rem, 2.5vw, 1.25rem);
+        color: rgba(255, 255, 255, 0.9);
+        margin-bottom: 40px;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+        animation: fadeInUp 0.6s ease-out 0.4s both;
+      }
+
+      .hero-cta {
+        display: flex;
+        gap: 16px;
+        justify-content: center;
+        flex-wrap: wrap;
+        animation: fadeInUp 0.6s ease-out 0.6s both;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 16px 32px;
+        border-radius: var(--border-radius-lg);
+        font-weight: 600;
+        font-size: 16px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        border: none;
+      }
+
+      .btn-primary {
+        background: var(--gradient-secondary);
+        color: white;
+        box-shadow: var(--shadow-lg);
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-xl);
+      }
+
+      .btn-secondary {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: white;
+      }
+
+      .btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      /* Stats Section */
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 32px;
+        margin: 60px 0;
+        text-align: center;
+      }
+
+      .stat-item {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: var(--border-radius-xl);
+        padding: 32px 24px;
+        animation: fadeInUp 0.6s ease-out;
+      }
+
+      .stat-number {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: white;
+        margin-bottom: 8px;
+      }
+
+      .stat-label {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      /* Features Section */
+      .features {
+        background: white;
+        border-radius: var(--border-radius-xl);
+        padding: 80px 40px;
+        margin: 60px 0;
+        box-shadow: var(--shadow-xl);
+      }
+
+      .features h2 {
+        text-align: center;
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--gray-900);
+        margin-bottom: 16px;
+      }
+
+      .features-subtitle {
+        text-align: center;
+        color: var(--gray-600);
+        font-size: 1.1rem;
+        margin-bottom: 60px;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 40px;
+      }
+
+      .feature-card {
+        text-align: center;
+        padding: 40px 24px;
+        border-radius: var(--border-radius-lg);
+        transition: all 0.3s ease;
+        border: 1px solid var(--gray-200);
+      }
+
+      .feature-card:hover {
+        transform: translateY(-8px);
+        box-shadow: var(--shadow-lg);
+        border-color: var(--primary);
+      }
+
+      .feature-icon {
+        width: 80px;
+        height: 80px;
+        background: var(--gradient-primary);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 24px;
+        font-size: 2rem;
+        color: white;
+      }
+
+      .feature-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--gray-900);
+        margin-bottom: 16px;
+      }
+
+      .feature-description {
+        color: var(--gray-600);
+        line-height: 1.6;
+      }
+
+      /* Demo Section */
+      .demo {
+        background: var(--gray-50);
+        padding: 80px 0;
+      }
+
+      .demo h2 {
+        text-align: center;
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--gray-900);
+        margin-bottom: 16px;
+      }
+
+      .demo-subtitle {
+        text-align: center;
+        color: var(--gray-600);
+        font-size: 1.1rem;
+        margin-bottom: 60px;
+      }
+
+      .demo-container {
+        display: grid;
+        grid-template-columns: 1fr 400px;
+        gap: 40px;
+        align-items: start;
+      }
+
+      .demo-input {
+        background: white;
+        border-radius: var(--border-radius-lg);
+        padding: 32px;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--gray-200);
+      }
+
+      .demo-input h3 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--gray-900);
+        margin-bottom: 24px;
+      }
+
+      .demo-textarea {
+        width: 100%;
+        min-height: 160px;
+        padding: 16px;
+        border: 2px solid var(--gray-200);
+        border-radius: var(--border-radius);
+        font-size: 16px;
+        resize: vertical;
+        transition: border-color 0.3s ease;
+      }
+
+      .demo-textarea:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+      }
+
+      .demo-controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 24px;
+        align-items: center;
+      }
+
+      .demo-select {
+        padding: 12px 16px;
+        border: 1px solid var(--gray-300);
+        border-radius: var(--border-radius);
+        background: white;
+      }
+
+      .demo-checkbox {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+        color: var(--gray-600);
+      }
+
+      .demo-btn {
+        background: var(--primary);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: var(--border-radius);
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .demo-btn:hover {
+        background: var(--primary-dark);
+        transform: translateY(-1px);
+      }
+
+      .demo-btn.ghost {
+        background: transparent;
+        color: var(--gray-600);
+        border: 1px solid var(--gray-300);
+      }
+
+      .demo-btn.ghost:hover {
+        background: var(--gray-100);
+      }
+
+      .demo-status {
+        margin-top: 16px;
+        padding: 12px;
+        border-radius: var(--border-radius);
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .demo-status.idle {
+        background: var(--gray-100);
+        color: var(--gray-600);
+      }
+
+      .demo-status.processing {
+        background: var(--primary);
+        color: white;
+      }
+
+      .spinner {
+        width: 16px;
+        height: 16px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-top-color: white;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .demo-output {
+        background: white;
+        border-radius: var(--border-radius-lg);
+        padding: 32px;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--gray-200);
+      }
+
+      .demo-output h3 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--gray-900);
+        margin-bottom: 24px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .result-placeholder {
+        text-align: center;
+        color: var(--gray-500);
+        padding: 40px;
+      }
+
+      .result-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--gray-900);
+        margin-bottom: 8px;
+      }
+
+      .result-subtitle {
+        color: var(--gray-600);
+        margin-bottom: 24px;
+      }
+
+      .result-points {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .result-point {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 16px;
+        background: var(--gray-50);
+        border-radius: var(--border-radius);
+        border-left: 4px solid var(--primary);
+      }
+
+      .result-point-number {
+        background: var(--primary);
+        color: white;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: 700;
+        flex-shrink: 0;
+      }
+
+      .result-point-text {
+        flex: 1;
+        color: var(--gray-700);
+      }
+
+      .result-meta {
+        margin-top: 24px;
+        padding: 16px;
+        background: var(--gradient-accent);
+        border-radius: var(--border-radius);
+        color: white;
+        font-weight: 600;
+      }
+
+      .final-infographic {
+        margin: 32px 0;
+        padding: 24px;
+        background: white;
+        border-radius: var(--border-radius-lg);
+        box-shadow: var(--shadow);
+        border: 2px solid var(--success);
+      }
+
+      .infographic-preview {
+        text-align: center;
+        margin-bottom: 24px;
+      }
+
+      .infographic-preview img {
+        max-width: 100%;
+        height: auto;
+        border-radius: var(--border-radius);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+      }
+
+      .infographic-meta {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 16px;
+      }
+
+      .meta-item {
+        padding: 12px 16px;
+        background: var(--gray-50);
+        border-radius: var(--border-radius);
+        border-left: 4px solid var(--primary);
+      }
+
+      .meta-item strong {
+        color: var(--gray-900);
+      }
+
+      .meta-item a {
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 600;
+      }
+
+      .meta-item a:hover {
+        text-decoration: underline;
+      }
+
+      /* FAQ Section */
+      .faq {
+        background: white;
+        padding: 80px 0;
+      }
+
+      .faq h2 {
+        text-align: center;
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--gray-900);
+        margin-bottom: 16px;
+      }
+
+      .faq-subtitle {
+        text-align: center;
+        color: var(--gray-600);
+        font-size: 1.1rem;
+        margin-bottom: 60px;
+      }
+
+      .faq-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 32px;
+      }
+
+      .faq-item {
+        border: 1px solid var(--gray-200);
+        border-radius: var(--border-radius-lg);
+        overflow: hidden;
+        transition: all 0.3s ease;
+      }
+
+      .faq-item:hover {
+        box-shadow: var(--shadow-lg);
+        border-color: var(--primary);
+      }
+
+      .faq-question {
+        background: var(--gray-50);
+        padding: 24px;
+        font-weight: 600;
+        color: var(--gray-900);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        transition: background-color 0.3s ease;
+      }
+
+      .faq-question:hover {
+        background: var(--primary);
+        color: white;
+      }
+
+      .faq-toggle {
+        font-size: 1.5rem;
+        transition: transform 0.3s ease;
+      }
+
+      .faq-item.active .faq-toggle {
+        transform: rotate(45deg);
+      }
+
+      .faq-answer {
+        padding: 0 24px 24px;
+        color: var(--gray-600);
+        line-height: 1.6;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+      }
+
+      .faq-item.active .faq-answer {
+        max-height: 500px;
+      }
+
+      /* CTA Section */
+      .cta {
+        background: var(--gradient-primary);
+        color: white;
+        text-align: center;
+        padding: 80px 0;
+      }
+
+      .cta h2 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 16px;
+      }
+
+      .cta p {
+        font-size: 1.1rem;
+        margin-bottom: 40px;
+        opacity: 0.9;
+      }
+
+      .cta .hero-cta {
+        justify-content: center;
+      }
+
+      /* Footer */
+      .footer {
+        background: var(--gray-900);
+        color: var(--gray-400);
+        text-align: center;
+        padding: 40px 0;
+      }
+
+      .footer p {
+        margin: 0;
+        font-size: 14px;
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        .hero {
+          padding: 60px 0 40px;
+        }
+
+        .hero h1 {
+          font-size: 2rem;
+        }
+
+        .hero-cta {
+          flex-direction: column;
+          align-items: center;
+        }
+
+        .stats {
+          grid-template-columns: 1fr;
+          gap: 24px;
+        }
+
+        .features-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .demo-container {
+          grid-template-columns: 1fr;
+          gap: 24px;
+        }
+
+        .faq-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="container">
+        <div class="hero-content">
+          <div class="hero-badge animate-fade-in-up">🚀 AI-Powered Design Tool</div>
+          <h1>Transform Text into<br>Stunning Infographics</h1>
+          <p class="hero-subtitle">Turn any content into professional, visually appealing infographics in seconds. Perfect for presentations, social media, marketing materials, and reports.</p>
+          <div class="hero-cta">
+            <button class="btn btn-primary" onclick="document.querySelector('.demo-input').scrollIntoView({behavior: 'smooth'})">
+              <span>✨</span> Try It Now - Free
+            </button>
+            <a href="#features" class="btn btn-secondary">
+              <span>📖</span> Learn More
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="container">
+      <div class="stats">
+        <div class="stat-item animate-fade-in-up">
+          <div class="stat-number">60s</div>
+          <div class="stat-label">Average Creation Time</div>
+        </div>
+        <div class="stat-item animate-fade-in-up">
+          <div class="stat-number">95%</div>
+          <div class="stat-label">Time Saved vs Manual</div>
+        </div>
+        <div class="stat-item animate-fade-in-up">
+          <div class="stat-number">∞</div>
+          <div class="stat-label">Design Possibilities</div>
+        </div>
+        <div class="stat-item animate-fade-in-up">
+          <div class="stat-number">24/7</div>
+          <div class="stat-label">Always Available</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+      <div class="container">
+        <h2>Why Choose InfoGraphic AI?</h2>
+        <p class="features-subtitle">Our AI-powered platform transforms your text content into professional infographics with just a few clicks.</p>
+
+        <div class="features-grid">
+          <div class="feature-card animate-fade-in-up">
+            <div class="feature-icon">🧠</div>
+            <h3 class="feature-title">Smart Content Analysis</h3>
+            <p class="feature-description">Advanced AI analyzes your text to extract key messages, identify themes, and understand context for optimal visual representation.</p>
+          </div>
+
+          <div class="feature-card animate-fade-in-up">
+            <div class="feature-icon">🎨</div>
+            <h3 class="feature-title">AI Image Generation</h3>
+            <p class="feature-description">Automatically generates relevant, high-quality images using cutting-edge AI models tailored to your content.</p>
+          </div>
+
+          <div class="feature-card animate-fade-in-up">
+            <div class="feature-icon">📐</div>
+            <h3 class="feature-title">Intelligent Layout Design</h3>
+            <p class="feature-description">Creates balanced, visually appealing layouts optimized for readability and engagement across all platforms.</p>
+          </div>
+
+          <div class="feature-card animate-fade-in-up">
+            <div class="feature-icon">⚡</div>
+            <h3 class="feature-title">Lightning Fast</h3>
+            <p class="feature-description">Transform hours of design work into seconds. Get professional results instantly without design skills.</p>
+          </div>
+
+          <div class="feature-card animate-fade-in-up">
+            <div class="feature-icon">📱</div>
+            <h3 class="feature-title">Multi-Platform Ready</h3>
+            <p class="feature-description">Optimized layouts for social media, presentations, websites, and print materials.</p>
+          </div>
+
+          <div class="feature-card animate-fade-in-up">
+            <div class="feature-icon">🔧</div>
+            <h3 class="feature-title">Developer Friendly</h3>
+            <p class="feature-description">Export results as JSON for integration with your existing tools and workflows.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Demo Section -->
+    <section class="demo">
+      <div class="container">
+        <h2>Try It Yourself</h2>
+        <p class="demo-subtitle">Paste any text content and watch the magic happen. No signup required!</p>
+
+        <div class="demo-container">
+          <div class="demo-input">
+            <h3>📝 Step 1: Paste Your Content</h3>
+            <textarea id="content" class="demo-textarea" placeholder="Paste your article, meeting notes, or any text content here...
+
+Example: The rise of serverless computing has transformed how teams build and scale applications. Key benefits include reduced operational overhead, pay-for-usage pricing, and automatic scaling. Use cases: web backends, event-driven processing, batch jobs." aria-label="Content for analysis">The rise of serverless computing has transformed how teams build and scale applications. Key benefits include reduced operational overhead, pay-for-usage pricing, and automatic scaling. Use cases: web backends, event-driven processing, batch jobs.</textarea>
+
+            <div class="demo-controls">
+              <label class="demo-checkbox">
+                <input type="checkbox" id="demo" checked>
+                Demo Mode (No AWS setup needed)
+              </label>
+              <div style="flex: 1;"></div>
+              <button id="analyze" class="demo-btn">Analyze Content</button>
+              <button id="fullPipeline" class="demo-btn">🚀 Full Pipeline</button>
+              <button id="sample" class="demo-btn demo-btn-ghost">Load Sample</button>
+              <button id="clear" class="demo-btn demo-btn-ghost">Clear</button>
+            </div>
+
+            <div id="status" class="demo-status idle">
+              <span>Ready to analyze your content</span>
+            </div>
+          </div>
+
+          <div class="demo-output">
+            <h3>🎯 Your Results</h3>
+            <div id="result-area">
+              <div class="result-placeholder">
+                <div style="font-size: 3rem; margin-bottom: 16px;">🎨</div>
+                <div style="font-size: 1.1rem; color: var(--gray-700); margin-bottom: 8px;">Your infographic outline will appear here</div>
+                <div style="color: var(--gray-500);">Click "Analyze Content" or "Full Pipeline" to get started!</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq">
+      <div class="container">
+        <h2>Frequently Asked Questions</h2>
+        <p class="faq-subtitle">Everything you need to know about creating stunning infographics with AI</p>
+
+        <div class="faq-grid">
+          <div class="faq-item">
+            <div class="faq-question" onclick="toggleFAQ(this)">
+              <span>How does the AI understand my content?</span>
+              <span class="faq-toggle">+</span>
+            </div>
+            <div class="faq-answer">
+              <p>Our advanced AI analyzes your text using natural language processing to identify key themes, extract important points, categorize content types, and understand the overall message. It then creates a visual hierarchy that best represents your content.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-question" onclick="toggleFAQ(this)">
+              <span>Do I need design skills to use this?</span>
+              <span class="faq-toggle">+</span>
+            </div>
+            <div class="faq-answer">
+              <p>Not at all! The AI handles all the design decisions for you. Just paste your content and get a professional-looking infographic outline instantly. The tool is designed for non-designers who need quick, effective visual content.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-question" onclick="toggleFAQ(this)">
+              <span>What types of content work best?</span>
+              <span class="faq-toggle">+</span>
+            </div>
+            <div class="faq-answer">
+              <p>Any text content works! Articles, blog posts, meeting notes, research findings, product descriptions, how-to guides, statistics, and more. The AI adapts to different content types and creates appropriate visual representations.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-question" onclick="toggleFAQ(this)">
+              <span>Can I use this for commercial purposes?</span>
+              <span class="faq-toggle">+</span>
+            </div>
+            <div class="faq-answer">
+              <p>Yes! The infographics you create can be used for any purpose - presentations, social media, marketing materials, reports, websites, and more. The AI-generated content is yours to use commercially.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-question" onclick="toggleFAQ(this)">
+              <span>Is my data secure and private?</span>
+              <span class="faq-toggle">+</span>
+            </div>
+            <div class="faq-answer">
+              <p>Your content is processed securely and isn't stored permanently. We use industry-standard encryption and don't share your data with third parties. Demo mode processes everything locally without any external API calls.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-question" onclick="toggleFAQ(this)">
+              <span>What platforms are supported?</span>
+              <span class="faq-toggle">+</span>
+            </div>
+            <div class="faq-answer">
+              <p>The layouts are optimized for all major platforms: presentations (PowerPoint, Google Slides), social media (Twitter, LinkedIn, Instagram), websites, print materials, and more. Choose your target platform for best results.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-question" onclick="toggleFAQ(this)">
+              <span>Can I export the results?</span>
+              <span class="faq-toggle">+</span>
+            </div>
+            <div class="faq-answer">
+              <p>Yes! Download your results as JSON data that you can import into design tools, integrate with your applications, or use with other software. The structured data includes all the layout specifications and content elements.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-question" onclick="toggleFAQ(this)">
+              <span>How accurate are the AI-generated images?</span>
+              <span class="faq-toggle">+</span>
+            </div>
+            <div class="faq-answer">
+              <p>Our AI image generation uses state-of-the-art models to create relevant, high-quality visuals that match your content. While not perfect, they provide excellent starting points for your infographics and can be refined as needed.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+      <div class="container">
+        <h2>Ready to Transform Your Content?</h2>
+        <p>Join thousands of professionals who save hours creating stunning visual content</p>
+        <div class="hero-cta">
+          <button class="btn btn-primary animate-pulse" onclick="document.querySelector('.demo-input').scrollIntoView({behavior: 'smooth'})">
+            <span>🚀</span> Start Creating Now
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container">
+        <p>&copy; 2025 InfoGraphic AI. Powered by AWS and advanced AI technology.</p>
+      </div>
+    </footer>
+
+    <script src="/static/main.js"></script>
+    <script>
+      // FAQ toggle functionality
+      function toggleFAQ(questionElement) {
+        const faqItem = questionElement.parentElement;
+        faqItem.classList.toggle('active');
+      }
+
+      // Smooth scrolling for anchor links
+      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+          e.preventDefault();
+          const target = document.querySelector(this.getAttribute('href'));
+          if (target) {
+            target.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start'
+            });
+          }
+        });
+      });
+
+      // Add animation delays to feature cards
+      document.querySelectorAll('.feature-card').forEach((card, index) => {
+        card.style.animationDelay = `${index * 0.1}s`;
+      });
+
+      // Add animation delays to stat items
+      document.querySelectorAll('.stat-item').forEach((item, index) => {
+        item.style.animationDelay = `${index * 0.2}s`;
+      });
+    </script>
+  </body>
+</html>

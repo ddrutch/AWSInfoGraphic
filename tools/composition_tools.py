@@ -15,7 +15,7 @@ import io
 import json
 
 from utils.types import (
-    ImageFormat, FinalInfographic, AgentResponse
+    ImageFormat, FinalInfographic, AgentResponse, LayoutSpec
 )
 from utils.constants import (
     PLATFORM_SPECS, IMAGE_PROCESSING, SUPPORTED_IMAGE_FORMATS,
@@ -71,7 +71,7 @@ class CompositionTools:
     
     def create_canvas(
         self,
-        layout_spec: LayoutSpecification,
+        layout_spec: LayoutSpec,
         background_color: Optional[str] = None,
         background_image: Optional[str] = None
     ) -> Image.Image:
@@ -124,7 +124,7 @@ class CompositionTools:
     def _apply_background_effects(
         self, 
         canvas: Image.Image, 
-        layout_spec: LayoutSpecification
+        layout_spec: LayoutSpec
     ) -> Image.Image:
         """
         Apply background effects like gradients or textures.
@@ -903,7 +903,7 @@ def create_composition_tools(s3_tools: Optional[S3Tools] = None) -> CompositionT
 
 
 def compose_infographic(
-    layout_spec: LayoutSpecification,
+    layout_spec: LayoutSpec,
     text_specs: List[Dict[str, Any]],
     image_specs: List[Dict[str, Any]] = None,
     shape_specs: List[Dict[str, Any]] = None,

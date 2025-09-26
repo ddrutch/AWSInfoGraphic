@@ -398,12 +398,53 @@ class BedrockTools:
             
             # Execute with retry logic
             response = self._retry_operation(_invoke)
-            
-            # Parse response
-            response_body = json.loads(response['body'].read())
-            result = self._parse_response(response_body)
-            
-            logger.info(f"Successfully invoked model, generated {len(result)} characters")
+
+            # Robustly extract bytes/text from response['body'] which may be
+            # a StreamingBody, bytes, str, or file-like object depending on SDK
+            raw_body = response.get('body') if isinstance(response, dict) else None
+
+            raw_bytes = b''
+            try:
+                if hasattr(raw_body, 'read'):
+                    # botocore.streaming.StreamingBody
+                    raw_bytes = raw_body.read()
+                elif isinstance(raw_body, (bytes, bytearray)):
+                    raw_bytes = bytes(raw_body)
+                elif isinstance(raw_body, str):
+                    raw_bytes = raw_body.encode('utf-8')
+                else:
+                    # Some clients return the full dict or string in response
+                    # Try to stringify the body
+                    raw_bytes = json.dumps(raw_body or {}).encode('utf-8')
+            except Exception:
+                # As a last resort, try to convert the whole response to str
+                try:
+                    raw_bytes = str(response).encode('utf-8')
+                except Exception:
+                    raw_bytes = b''
+
+            # Try to decode bytes as text
+            text = None
+            try:
+                text = raw_bytes.decode('utf-8') if raw_bytes else None
+            except Exception:
+                text = None
+
+            # If provider returns binary image data (nova_canvas), return bytes
+            if text is None or text == '':
+                # No text available; return raw bytes
+                logger.info("Bedrock returned binary data (non-text). Returning raw bytes")
+                return raw_bytes
+
+            # Try parse JSON text into python object
+            try:
+                response_body = json.loads(text)
+                result = self._parse_response(response_body)
+            except json.JSONDecodeError:
+                # Not JSON; treat as plain text
+                result = text
+
+            logger.info(f"Successfully invoked model {self.model_id}")
             return result
             
         except Exception as e:
@@ -494,6 +535,13 @@ Always respond with valid JSON format. Be concise and focus on visual communicat
                 
         except Exception as e:
             raise BedrockInvocationError(f"Content analysis failed: {str(e)}")
+
+    async def invoke_model_async(self, *args, **kwargs) -> str:
+        """Async wrapper around invoke_model using threadpool to avoid blocking.
+
+        This is useful for calling Bedrock from async code (e.g., Strands tools).
+        """
+        return await asyncio.to_thread(self.invoke_model, *args, **kwargs)
     
     def generate_image_prompt(
         self,

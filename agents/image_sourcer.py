@@ -8,8 +8,52 @@ following AWS Strands SDK patterns for multi-agent orchestration.
 import logging
 from typing import Any, Dict, Optional
 
-from strands import Agent
-from strands.models import BedrockModel
+try:
+    from strands import Agent
+    from strands.models import BedrockModel
+except Exception:
+    # Provide lightweight shims so the ImageSourcer can be exercised
+    # locally without the Strands SDK or Bedrock access. The shimbed
+    # Agent simply calls the image sourcing tools directly.
+    Agent = None
+    class BedrockModel:  # simple placeholder
+        def __init__(self, model_id=None):
+            self.model_id = model_id
+
+
+    class AgentShim:
+        def __init__(self, name: str, system_prompt: str = None, model: Any = None, tools: Optional[list] = None):
+            self.name = name
+            self.system_prompt = system_prompt
+            self.model = model
+            # tools is a list of callables; we keep reference for completeness
+            self.tools = tools or []
+
+        async def invoke_async(self, prompt: str):
+            # Minimal prompt parsing: extract content analysis from the prompt
+            import re
+            from tools.image_sourcing_tools import (
+                source_images,
+            )
+
+            # Parse content analysis from prompt
+            content_match = re.search(r"Content Analysis:\s*(\{.*?\})", prompt, re.S)
+            if content_match:
+                import json
+                try:
+                    content_analysis = json.loads(content_match.group(1))
+                except:
+                    content_analysis = {"main_topic": "sample topic", "key_points": ["point 1"]}
+            else:
+                content_analysis = {"main_topic": "sample topic", "key_points": ["point 1"]}
+
+            # Use the existing tools (they have local fallbacks) to produce
+            # a structured response resembling what the full agent would return.
+            images = await source_images(content_analysis.get('main_topic', 'infographic'), count=2)
+
+            return images
+
+    Agent = AgentShim
 
 from tools.image_sourcing_tools import get_image_sourcing_tools
 from utils.constants import BEDROCK_MODEL_ID, BEDROCK_REGION
